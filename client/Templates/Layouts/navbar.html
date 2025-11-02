@@ -1,0 +1,259 @@
+
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center group">
+                        <span class="ml-3 text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">📚 Flask Blog</span>
+                    </a>
+                </div>
+
+                 {% if is_logged_in %}
+                <div class="hidden md:flex items-center space-x-1">
+                    <div class="dropdown relative">
+                        <a href='/' class="nav-link text-gray-700 hover:text-blue-600 px-4 py-2 flex items-center rounded-lg hover:bg-blue-50 transition-colors duration-200">
+                            <i class="fas fa-home mr-2"></i>
+                            Accueil
+                        </a>
+                    </div>
+
+                    <a href="/articles" class="nav-link text-gray-700 hover:text-blue-600 px-4 py-2 flex items-center rounded-lg hover:bg-blue-50 transition-colors duration-200">
+                            <i class="fas fa-file-alt mr-2"></i>
+                            Mes articles
+                    </a>
+                    
+                    <a href="/" class="nav-link text-gray-700 hover:text-blue-600 px-4 py-2 flex items-center rounded-lg hover:bg-blue-50 transition-colors duration-200">
+                        <span class="ml-2 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">New</span>
+                        Nouvel article
+                    </a>
+                </div>
+                <!-- Right Section - Actions -->
+                <div class="flex items-center space-x-3">
+                    
+
+                    <div class="hidden md:block h-6 w-px bg-gray-200"></div>
+
+                    <div class="dropdown relative">
+                        <button class="flex items-center space-x-2 focus:outline-none group">
+                            <div class="relative">
+                                <div class="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 overflow-hidden avatar-ring">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="h-full w-full object-cover">
+                                </div>
+                                <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-white"></span>
+                            </div>
+                            <div class="hidden lg:flex flex-col items-start">
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200">{{ current_user.username }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-gray-500 hidden lg:inline transition-transform duration-200 group-hover:text-blue-600"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1 z-50 opacity-0 invisible transition-all duration-300 transform -translate-y-2 border border-gray-100">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 overflow-hidden mr-3">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="h-full w-full object-cover">
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ current_user.username }}</p>
+                                        <p class="text-sm text-gray-500">{{ current_user.email }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="/profile" class="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-200">
+                                <i class="fas fa-user-circle text-gray-400 mr-3 w-5 text-center"></i>
+                                My Profile
+                            </a>
+                            
+                            <a href="/articles" class="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-200">
+                                <i class="fas fa-file-alt mr-2"></i>
+                                Mes articles
+                                <span class="ml-auto bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="/logout" class="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center transition-colors duration-200">
+                                <i class="fas fa-sign-out-alt text-gray-400 mr-3 w-5 text-center"></i>
+                                Déconnexion
+                            </a>
+                        </div>
+                    </div>
+
+                    <button id="mobile-menu-button" class="md:hidden p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                        <i class="fas fa-bars text-xl"></i>
+                        <span class="sr-only">Menu</span>
+                    </button>
+                </div>
+                 {% endif%}
+                 {% if not is_logged_in %}
+                <div class="flex gap-4">
+
+                    <a href="/register" class="text-gray-700  px-4 py-2 flex items-center rounded-lg ">
+                         S'inscrire
+                    </a>
+                    <a href="/login" class=" text-indigo-800 px-4 py-1 flex items-center rounded-lg">
+                         Connexion
+                    </a>
+                    
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-4 space-y-1">
+                {% if is_logged_in %}
+                <a href="/" class="block px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 flex items-center transition-colors duration-200">
+                    <i class="fas fa-home text-blue-500 mr-3 w-5 text-center"></i>
+                    Accueil
+                </a>
+                
+                
+                <a href="/articles" class="w-full flex justify-between items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-alt text-blue-500 mr-3 w-5 text-center"></i>
+                        Mes articles
+                    </div>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-200 group-focus:rotate-180"></i>
+                </a>
+                   
+            
+                <div class="border-t border-gray-200 pt-2 mt-2">
+                    <a href="/profile" class="block px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 flex items-center transition-colors duration-200">
+                        <i class="fas fa-user-circle text-blue-500 mr-3 w-5 text-center"></i>
+                        Profile
+                    </a>
+                    
+                    <a href="/logout" class="block px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 flex items-center transition-colors duration-200">
+                        <i class="fas fa-sign-out-alt text-blue-500 mr-3 w-5 text-center"></i>
+                        Déconnexion
+                    </a>
+                </div>
+                {% endif %}
+                {% if not is_logged_in %}
+                <div class="flex gap-4">
+    
+                    <a href="/register" class="text-gray-700  px-4 py-2 flex items-center rounded-lg ">
+                            S'inscrire
+                    </a>
+                    <a href="/login" class=" text-indigo-800 px-4 py-1 flex items-center rounded-lg">
+                            Connexion
+                    </a>
+                    
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced mobile menu toggle with animation
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    const isExpanded = mobileMenu.classList.contains('open');
+                    if (isExpanded) {
+                        mobileMenu.classList.remove('open');
+                        setTimeout(() => {
+                            mobileMenu.classList.add('hidden');
+                        }, 300); // Match this with the transition duration
+                    } else {
+                        mobileMenu.classList.remove('hidden');
+                        // Trigger reflow to enable animation
+                        void mobileMenu.offsetHeight;
+                        mobileMenu.classList.add('open');
+                    }
+                    
+                    // Toggle aria-expanded attribute
+                    const expanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !expanded);
+                    
+                    // Change icon
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('fa-bars');
+                        icon.classList.toggle('fa-times');
+                    }
+                });
+            }
+
+            // Improved dropdown handling
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const button = dropdown.querySelector('button');
+                const menu = dropdown.querySelector('.dropdown-menu');
+                
+                if (button && menu) {
+                    // Handle click
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const isOpen = !menu.classList.contains('opacity-0');
+                        
+                        // Close all other dropdowns first
+                        document.querySelectorAll('.dropdown-menu').forEach(m => {
+                            if (m !== menu) {
+                                m.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                            }
+                        });
+                        
+                        // Toggle current dropdown
+                        if (isOpen) {
+                            menu.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                        } else {
+                            menu.classList.remove('opacity-0', 'invisible', '-translate-y-2');
+                        }
+                    });
+                    
+                    // Handle hover for desktop
+                    if (window.innerWidth > 768) {
+                        dropdown.addEventListener('mouseenter', () => {
+                            menu.classList.remove('opacity-0', 'invisible', '-translate-y-2');
+                        });
+                        
+                        dropdown.addEventListener('mouseleave', () => {
+                            menu.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                        });
+                    }
+                }
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && mobileMenu) {
+                    mobileMenu.classList.remove('open');
+                    mobileMenu.classList.add('hidden');
+                    const menuButton = document.getElementById('mobile-menu-button');
+                    if (menuButton) {
+                        menuButton.setAttribute('aria-expanded', 'false');
+                        const icon = menuButton.querySelector('i');
+                        if (icon) {
+                            icon.classList.add('fa-bars');
+                            icon.classList.remove('fa-times');
+                        }
+                    }
+                }
+            });
+            
+            // Add active state to current page link (example)
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.includes(currentPath)) {
+                    link.classList.add('text-blue-600', 'font-medium');
+                    link.classList.remove('text-gray-700');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+{% extends "Layouts/default.html" %} {% block title %}{{ article.title }} -
+Blog{% endblock %} {% block content %}
+<div class="max-w-3xl mx-auto py-10 px-4">
+  <!-- ARTICLE -->
+  <article
+    class="mb-12 bg-white p-4 rounded-lg rounded-2xl shadow-xl p-8 md:p-12 mb-8 border-t-4 border-indigo-600"
+  >
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ article.title }}</h1>
+
+    <div class="flex gap-6 text-sm text-gray-600 mb-8 pb-8 border-b">
+      <span>👤 Auteur</span>
+      <span>📅 {{ article.created_at }}</span>
+    </div>
+
+    <div class="text-lg text-gray-800 leading-relaxed whitespace-pre-wrap mb-8">
+      {{ article.body }}
+    </div>
+
+    <a
+      href="/"
+      class="inline-block bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900"
+    >
+      ← Retour
+    </a>
+  </article>
+
+  <!-- COMMENTAIRES -->
+  <section class="bg-gray-50 p-8 rounded">
+    <h2 class="text-2xl font-bold text-gray-900 mb-8">Commentaires</h2>
+
+    <!-- FORMULAIRE -->
+    {% if is_logged_in %}
+    <form id="commentForm" class="mb-8 pb-8 border-b">
+      <div id="commentErrors"></div>
+      <input type="hidden" id="articleId" value="{{ article.id }}" />
+
+      <textarea
+        id="commentMessage"
+        rows="4"
+        placeholder="Votre commentaire..."
+        class="w-full p-3 border rounded mb-3 focus:outline-none focus:ring-2 focus:ring-gray-800"
+      ></textarea>
+
+      <button
+        type="submit"
+        class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900"
+      >
+        Envoyer
+      </button>
+    </form>
+    {% else %}
+    <div class="mb-8 pb-8 border-b bg-white p-4 rounded text-center">
+      <p>
+        <a href="/login" class="text-blue-600 font-bold">Connectez-vous</a> pour
+        commenter
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- LISTE -->
+    <div id="commentsContainer" class="space-y-4">
+      <p class="text-gray-600">Chargement...</p>
+    </div>
+  </section>
+</div>
+
+<script>
+  const articleId = {{ article.id }};
+  let comments = [];
+
+  document.addEventListener("DOMContentLoaded", loadComments);
+
+  async function loadComments() {
+      try {
+          const res = await fetch(`/api/posts/${articleId}/comments`);
+          const data = await res.json();
+
+          if (data.success && data.comments) {
+              comments = data.comments;
+              console.log(comments)
+              renderComments();
+          } else {
+              document.getElementById("commentsContainer").innerHTML =
+                  '<p class="text-gray-600">Aucun commentaire</p>';
+          }
+      } catch (error) {
+          console.error("Erreur:", error);
+      }
+  }
+
+  function renderComments() {
+      const container = document.getElementById("commentsContainer");
+      const currentUserId = {{ current_user.id if current_user else 'null' }};
+      console.log(currentUserId)
+
+      if (comments.length === 0) {
+          container.innerHTML = '<p class="text-gray-600">Aucun commentaire</p>';
+          return;
+      }
+
+      container.innerHTML = comments.map(c => {
+          const isOwner = currentUserId && c.user_id === currentUserId;
+          console.log(isOwner,c.user_id)
+          return `
+              <div class="bg-white p-4 rounded border">
+                  <div class="flex justify-between items-start mb-2">
+                      <div>
+                          <div class="flex items-center space-x-2 focus:outline-none group">
+                          <div class="relative">
+                              <div class="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 overflow-hidden avatar-ring">
+                                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="h-full w-full object-cover">
+                              </div>
+                          </div>
+                          <div class="hidden lg:flex flex-col items-start">
+                              <span class="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200">  ${c.username}</span>
+                          </div>
+                      </div>
+                          <strong class="text-gray-900"></strong>
+                          <br>
+                          <small class="text-gray-600">${new Date(c.created_at).toLocaleDateString('fr-FR')}</small>
+                      </div>
+                      ${isOwner ? '<span class="text-xs bg-gray-200 px-2 py-1 rounded">C\'est toi</span>' : ''}
+                  </div>
+
+                  <div id="comment-content-${c.id}">
+                      <p class="text-gray-800">${c.content}</p>
+                  </div>
+
+                   ${isOwner ? `
+                      <div class="mt-3 flex gap-2">
+                          <button onclick="editComment(${c.id})" class="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                              Éditer
+                          </button>
+                          <button onclick="deleteComment(${c.id})" class="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                              Supprimer
+                          </button>
+                      </div>
+                  ` : ''}
+              </div>
+          `;
+      }).join('');
+  }
+
+  document.getElementById("commentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const message = document.getElementById("commentMessage").value.trim();
+      if (!message) return;
+
+      try {
+          const res = await fetch("/api/comments", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ article_id: articleId, message })
+          });
+
+          if (res.ok) {
+              document.getElementById("commentMessage").value = "";
+              await loadComments();
+          }
+      } catch (error) {
+          console.error("Erreur:", error);
+      }
+  });
+
+  function editComment(commentId, message) {
+      const div = document.getElementById(`comment-content-${commentId}`);
+
+      div.innerHTML = `
+          <textarea class="w-full p-2 border rounded mb-2" id="edit-${commentId}" rows="3">${message}</textarea>
+          <div class="flex gap-2">
+              <button onclick="saveEdit(${commentId})" class="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                  Sauvegarder
+              </button>
+              <button onclick="loadComments()" class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500">
+                  Annuler
+              </button>
+          </div>
+      `;
+  }
+
+  async function saveEdit(commentId) {
+      const text = document.getElementById(`edit-${commentId}`).value.trim();
+      if (!text) return;
+
+      try {
+          const res = await fetch(`/api/comments/${commentId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message: text })
+          });
+
+          if (res.ok) await loadComments();
+      } catch (error) {
+          console.error("Erreur:", error);
+      }
+  }
+
+  async function deleteComment(commentId) {
+      if (!confirm("Supprimer ce commentaire?")) return;
+
+      try {
+          const res = await fetch(`/api/comments/${commentId}`, {
+              method: "DELETE"
+          });
+
+          if (res.ok) await loadComments();
+      } catch (error) {
+          console.error("Erreur:", error);
+      }
+  }
+</script>
+
+{% endblock %}
