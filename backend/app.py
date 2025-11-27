@@ -130,7 +130,6 @@ def user_articles():
     user = UsersController.get_logged_user()
     
     success, articles, status_code = ArticlesController.get_all_articles()
-    print(articles)
     if success:
         user_articles_list = [a for a in articles if a.get('user_id') == user.get('id')]
         return render_template('my_articles.html', 
