@@ -1,7 +1,7 @@
 import os
 
 #  API SERVER 
-API_SERVER = os.getenv('API_SERVER', 'http://localhost:5000')
+API_SERVER = os.getenv('API_SERVER', 'https://mon-blog-api.onrender.com/')
 API_TIMEOUT = int(os.getenv('API_TIMEOUT', 30))
 
 #  FLASK CONFIG 
